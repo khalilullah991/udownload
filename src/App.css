@@ -1,19 +1,9 @@
-.App {
-  text-align: center;
-}
 body {
   margin: 0;
   padding: 0;
   background: linear-gradient(135deg, #74EBD5 0%, #9FACE6 100%);
   color: #333;
   font-family: 'Arial', sans-serif;
-  /* Rest of your body styles */
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
 }
 
 .App-header {
@@ -31,76 +21,15 @@ body {
   color: #61dafb;
 }
 
-
-.loader,
-.loader:after {
-  border-radius: 50%;
-  width: 10em;
-  height: 10em;
-}
-.loader {
-  margin: 60px auto;
-  font-size: 10px;
-  position: relative;
-  text-indent: -9999em;
-  border-top: 1.1em solid rgba(255, 255, 255, 0.2);
-  border-right: 1.1em solid rgba(255, 255, 255, 0.2);
-  border-bottom: 1.1em solid rgba(255, 255, 255, 0.2);
-  border-left: 1.1em solid #ffffff;
-  -webkit-transform: translateZ(0);
-  -ms-transform: translateZ(0);
-  transform: translateZ(0);
-  -webkit-animation: load8 1.1s infinite linear;
-  animation: load8 1.1s infinite linear;
+.input {
+  height: 4em;
+  width: 30em;
+  border-radius: 0.5em;
 }
 
-@-webkit-keyframes load8 {
-  0% {
-    -webkit-transform: rotate(0deg);
-    transform: rotate(0deg);
-  }
-  100% {
-    -webkit-transform: rotate(360deg);
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes load8 {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.progress-bar {
-  width: 100%; /* Full width of the container */
-  background-color: #ddd; /* Background of the bar */
-}
-
-.progress {
-  height: 4px;
-  background-color: #4caf50; /* Color of the progress indicator */
-  width: 0; /* Initial width of the progress */
-  animation: load 2s infinite;
-}
-
-@keyframes load {
-  0% {
-    width: 0;
-  }
-  50% {
-    width: 100%; /* Alternatively, 100% for full width and then back */
-  }
-  100% {
-    width: 0;
-  }
-}
-#root {
-  display: grid;
-  grid-template-columns: auto auto;
-  align-items: center;
-  place-content: center;
-  min-height: 100vh;
+.button {
+  height: 3em;
+  margin-left: 1em;
+  margin-bottom: 0.4em;
+  border-radius: 0.5em;
 }

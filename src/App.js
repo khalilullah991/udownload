@@ -1,59 +1,59 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import './App.css'; // Ensure this is pointing to the correct path of your CSS file
 
 const VideoDownloader = () => {
   const [url, setUrl] = useState('');
   const [formats, setFormats] = useState([]);
-  const [loading, setLoading] = useState(false); // State to handle the loading animation
+  const [selectedFormat, setSelectedFormat] = useState('');
+  const [error, setError] = useState('');
 
-  const fetchVideoInfo = async () => {
+  const fetchFormats = async () => {
     try {
-      setLoading(true); // Start the loading animation
-      const response = await axios.get(`http://localhost:5000/videoInfo?videoUrl=${encodeURIComponent(url)}`);
+      // Basic input validation
+      if (!url.trim()) {
+        setError('Please enter a valid video URL.');
+        return;
+      }
+
+      const response = await axios.post('http://localhost:3001/video/formats', { url });
       setFormats(response.data);
+      setError('');
     } catch (error) {
-      console.error('Error fetching video information:', error);
-      // Handle error, e.g., display notification to the user
-    } finally {
-      setLoading(false); // Stop the loading animation regardless of outcome
+      // Handle server errors
+      setError('Failed to fetch formats. Please try again later.');
     }
   };
 
-  const handleDownload = (itag) => {
-    window.location.href = `http://localhost:5000/download?videoUrl=${encodeURIComponent(url)}&itag=${itag}`;
+  const downloadVideo = () => {
+    if (!selectedFormat) {
+      setError('Please select a format.');
+      return;
+    }
+    // Use encodeURIComponent to sanitize URL parameter
+    window.open(`http://localhost:3001/video/download?url=${encodeURIComponent(url)}&format=${selectedFormat}`);
   };
 
   return (
-    <div id='root'>
+    <div>
       <input
         type="text"
-        placeholder="Enter YouTube video URL"
         value={url}
-        onChange={e => setUrl(e.target.value)}
+        onChange={(e) => setUrl(e.target.value)}
+        placeholder="Enter video URL"
       />
-      <button onClick={fetchVideoInfo}>Fetch Available Formats</button>
-
-      {/* Display loading animation */}
-      {loading && (
-        <div className="progress-bar">
-          <div className="progress"></div>
-        </div>
-      )}
-
+      <button onClick={fetchFormats}>Fetch Formats</button>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
       {formats.length > 0 && (
-        <div>
-          <h3>Select a format to download:</h3>
-          <ul>
-            {formats.map((format, index) => (
-              <li key={index}>
-                {format.quality} - {format.container}
-                <button onClick={() => handleDownload(format.itag)}>Download</button>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <select onChange={(e) => setSelectedFormat(e.target.value)}>
+          <option value="">Select Format</option>
+          {formats.map((format, index) => (
+            <option key={index} value={format.itag}>
+              {format.container} - {format.qualityLabel}
+            </option>
+          ))}
+        </select>
       )}
+      <button onClick={downloadVideo}>Download</button>
     </div>
   );
 };

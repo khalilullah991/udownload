@@ -1,44 +1,45 @@
 const express = require('express');
 const ytdl = require('ytdl-core');
-const app = express();
 const cors = require('cors');
-const port = 5000;
+const helmet = require('helmet');
+
+const app = express();
+const PORT = process.env.PORT || 3001;
+
 app.use(cors());
+app.use(helmet());
+app.use(express.json());
 
-// New endpoint to get available video formats
-app.get('/videoInfo', async (req, res) => {
-  const { videoUrl } = req.query;
-
-  if (!videoUrl || !ytdl.validateURL(videoUrl)) {
-    return res.status(400).send('Invalid or missing video URL');
-  }
-
-  try {
-    const info = await ytdl.getInfo(videoUrl);
-    const formats = ytdl.filterFormats(info.formats, 'videoandaudio');
-    const videoFormats = formats.map(format => ({
-      itag: format.itag,
-      quality: format.qualityLabel,
-      container: format.container,
-      url: format.url
-    }));
-
-    res.json(videoFormats);
-  } catch (error) {
-    console.error('Error getting video information:', error);
-    res.status(500).send('Failed to get video information');
-  }
-});
-
-// Download endpoint
-app.get('/download', (req, res) => {
-  const { videoUrl, itag } = req.query;
+// Fetch available video formats
+app.post('/video/formats', async (req, res) => {
+  const { url } = req.body;
   
-  // Re-validate here if desired
-  res.header('Content-Disposition', 'attachment; filename="video.mp4"');
-  ytdl(videoUrl, { itag }).pipe(res);
+  if (!url || !ytdl.validateURL(url)) {
+    return res.status(400).send('Invalid URL.');
+  }
+  
+  try {
+    const info = await ytdl.getInfo(url);
+    res.json(info.formats);
+  } catch (error) {
+    res.status(500).send('Failed to fetch video formats.');
+  }
 });
 
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}/`);
+// Download video
+app.get('/video/download', async (req, res) => {
+  const { url, format } = req.query;
+  
+  if (!url || !format || !ytdl.validateURL(url)) {
+    return res.status(400).send('Invalid parameters.');
+  }
+  
+  res.header('Content-Disposition', 'attachment; filename="video.mp4"');
+  ytdl(url, {
+    format: format,
+  }).pipe(res);
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
